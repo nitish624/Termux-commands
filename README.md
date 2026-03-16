@@ -5,7 +5,7 @@
 
 # Tools for coding
 1. spck code editor https://play.google.com/store/search?q=spck+code+editor&c=apps
-<{% img https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRd0zT_scx_0FYFdwft0WoiFbGoPqS9j2X7nDM210U_0Q&s=10 40px height title_text alt_text %}
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRd0zT_scx_0FYFdwft0WoiFbGoPqS9j2X7nDM210U_0Q&s=10">
 
 2. Acode https://play.google.com/store/apps/details?id=com.foxdebug.acodefree&referrer=utm_source%3Dgoogle%26utm_medium%3Dorganic%26utm_term%3Dacode&pcampaignid=APPU_1_tv6oac2cL86gseMPi8eZ8Ao
 
