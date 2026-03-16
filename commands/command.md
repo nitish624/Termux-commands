@@ -24,10 +24,14 @@
 1. pkg install git: To clone projects from GitHub
 2. pkg install python: To run Python scripts
 3. pkg install nano: A simple, beginner-friendly text editor
-4.pkg install curl or wget: For downloading files from the internet via URL
+4. pkg install curl or wget: For downloading files from the internet via URL
+5. `pkg install which` path batane ke liye `which fileName`
 
 # other
 1. Ctrl + C :kill the task
 2. Tab Key: Start typing a filename and hit Tab. Termux will auto-complete it for you
 3. Up/Down Arrows: Cycles through your command history so you don't have to re-type long commands
-4. Search : pkg search <query>
+4. Search : `pkg search <query>`
+5. termux-wake-lock
+6. `chmod +x apktool <fileName>` : executive permission
+7. `<pkg> -v` :showVersion
