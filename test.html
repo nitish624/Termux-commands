@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate HTML & CSS Showcases</title>
+    <style>
+        /* 1. Global Reset & Box Model */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 2. Custom Variables */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --bg-color: #f4f4f4;
+    --text-color: #333;
+}
+
+/* 3. Typography & Background */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+}
+
+/* 4. Flexbox Layout */
+.main-header {
+    background: #2c3e50;
+    color: white;
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--secondary-color);
+}
+
+/* 5. Grid Layout */
+.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* 6. Box Model & Borders */
+.content-section {
+    background: white;
+    margin: 20px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-left: 5px solid var(--primary-color);
+}
+
+/* 7. Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+tr:nth-child(even) { background-color: #f9f9f9; }
+
+/* 8. Transitions & Animations */
+.btn-animate {
+    padding: 10px 20px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.btn-animate:hover {
+    transform: scale(1.1);
+    background: #2980b9;
+}
+
+/* 9. Media Queries (Responsive) */
+@media (max-width: 600px) {
+    .main-header {
+        flex-direction: column;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#text">Text</a></li>
+                <li><a href="#media">Media</a></li>
+                <li><a href="#forms">Forms</a></li>
+                <li><a href="#tables">Tables</a></li>
+                <li><a href="#interact">Interactive</a></li>
+            </ul>
+        </nav>
+        <h1>HTML5 & CSS3 Master Showcase</h1>
+    </header>
+
+    <main>
+        <section id="text" class="content-section">
+            <header><h2>1. Text & Typography Tags</h2></header>
+            <article>
+                <h1>Heading 1</h1>
+                <p>Ye ek paragraph hai jisme <mark>highlight</mark>, <strong>bold</strong>, <em>italic</em>, aur <code>inline code</code> shamil hain.</p>
+                <blockquote>"Ye ek blockquote hai jo kisi purane kahawat ko darshata hai." <cite>- Author Name</cite></blockquote>
+                <pre>
+// Preformatted text block
+function helloWorld() {
+    console.log("Hello HTML!");
+}
+                </pre>
+                <p>Keyboard Shortcut: <kbd>Ctrl</kbd> + <kbd>S</kbd></p>
+                <p>H<sub>2</sub>O (Subscript) aur E=mc<sup>2</sup> (Superscript)</p>
+            </article>
+        </section>
+
+        <section id="media" class="content-section grid-layout">
+            <header><h2>2. Multimedia & Graphics</h2></header>
+            <figure>
+                <img src="https://via.placeholder.com/300" alt="Sample Image">
+                <figcaption>Figure: Ek image placeholder</figcaption>
+            </figure>
+            
+            <div class="video-container">
+                <video controls width="250">
+                    <source src="#" type="video/mp4">
+                    Browser video support nahi karta.
+                </video>
+            </div>
+
+            <svg width="100" height="100">
+                <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+            </svg>
+        </section>
+
+        <section id="forms" class="content-section">
+            <header><h2>3. Form & User Input</h2></header>
+            <form action="#" method="post">
+                <fieldset>
+                    <legend>Personal Info</legend>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" placeholder="Apna naam likhein" required>
+                    
+                    <label for="color">Favorite Color:</label>
+                    <input type="color" id="color">
+
+                    <label>Skills:</label>
+                    <input type="checkbox" id="html" checked> <label for="html">HTML</label>
+                    <input type="checkbox" id="css"> <label for="css">CSS</label>
+
+                    <label for="range">Expertise Level:</label>
+                    <input type="range" id="range" min="0" max="100">
+                </fieldset>
+
+                <label for="browser">Browser Select:</label>
+                <input list="browsers" id="browser">
+                <datalist id="browsers">
+                    <option value="Chrome">
+                    <option value="Firefox">
+                    <option value="Edge">
+                </datalist>
+
+                <button type="submit" class="btn-animate">Submit Form</button>
+            </form>
+        </section>
+
+        <section id="tables" class="content-section">
+            <header><h2>4. Data Tables</h2></header>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tag</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>&lt;div&gt;</td>
+                        <td>Block</td>
+                        <td>Common</td>
+                    </tr>
+                    <tr>
+                        <td>&lt;span&gt;</td>
+                        <td>Inline</td>
+                        <td>Common</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">HTML Table Footer</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+
+        <section id="interact" class="content-section">
+            <header><h2>5. Interactive Elements</h2></header>
+            <details>
+                <summary>Click karke aur jaaniye</summary>
+                <p>Ye content details tag ke andar hidden tha!</p>
+            </details>
+            
+            <progress value="70" max="100"></progress>
+            <meter value="0.6">60%</meter>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <address>Contact: info@example.com</address>
+        <p>&copy; 2026 Ultimate HTML Project</p>
+    </footer>
+
+</body>
+</html>

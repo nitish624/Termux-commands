@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Master Project with Charts</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4a90e2; --dark: #2c3e50; --light: #f8f9fa;
+            --success: #2ecc71; --danger: #e74c3c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--light); color: var(--dark); transition: 0.4s; }
+        body.dark-mode { background: #1a1a1a; color: #eee; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--dark); color: white; padding: 20px; border-radius: 15px;
+            margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;
+        }
+
+        .card {
+            background: white; padding: 25px; border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        body.dark-mode .card { background: #333; color: white; }
+
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: var(--primary); color: white; }
+
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+
+        /* Chart Container */
+        .chart-container { position: relative; height: 250px; width: 100%; margin-top: 15px; }
+
+        #todo-list li {
+            background: #f1f1f1; margin: 5px 0; padding: 10px;
+            display: flex; justify-content: space-between; border-radius: 5px; color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>Master Dashboard 2.0</h1>
+            <p id="clock">00:00:00</p>
+        </div>
+        <button class="btn btn-primary" onclick="toggleTheme()">🌓 Dark Mode</button>
+    </header>
+
+    <div class="dashboard-grid">
+        
+        <section class="card">
+            <h2>📊 Performance (Chart.js)</h2>
+            <div class="chart-container">
+                <canvas id="myChart"></canvas>
+            </div>
+            <button class="btn btn-primary" onclick="updateChartData()" style="width:100%; margin-top:10px;">Randomize Data</button>
+        </section>
+
+        <section class="card">
+            <h2>🌍 Real-time Weather</h2>
+            <div id="weather-info">Loading London weather...</div>
+            <button class="btn btn-primary" onclick="getWeather()" style="margin-top:10px;">Refresh</button>
+        </section>
+
+        <section class="card">
+            <h2>📝 Task Tracker</h2>
+            <input type="text" id="taskInput" placeholder="New Task...">
+            <button class="btn btn-primary" onclick="addTask()" style="width:100%">Add Task</button>
+            <ul id="taskList"></ul>
+        </section>
+
+        <section class="card">
+            <h2>🔍 Search Frameworks</h2>
+            <input type="text" onkeyup="searchItems(this.value)" placeholder="Type to filter...">
+            <div id="results" style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;"></div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+    // 1. THEME TOGGLE
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+    }
+
+    // 2. LIVE CLOCK
+    setInterval(() => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+    }, 1000);
+
+    // 3. CHART.JS IMPLEMENTATION
+    const ctx = document.getElementById('myChart').getContext('2d');
+    let myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['HTML', 'CSS', 'JS', 'React', 'Node'],
+            datasets: [{
+                label: 'Skill Level %',
+                data: [90, 85, 75, 60, 50],
+                backgroundColor: ['#4a90e2', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6']
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    function updateChartData() {
+        myChart.data.datasets[0].data = myChart.data.datasets[0].data.map(() => Math.floor(Math.random() * 100));
+        myChart.update();
+    }
+
+    // 4. API FETCH (Weather)
+    async function getWeather() {
+        const box = document.getElementById('weather-info');
+        try {
+            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=51.5&longitude=-0.1&current_weather=true');
+            const data = await res.json();
+            box.innerHTML = `<div style="text-align:center;">
+                <h3 style="font-size:2.5em;">${data.current_weather.temperature}°C</h3>
+                <p>London (Live API)</p>
+            </div>`;
+        } catch (e) { box.innerText = "API Error!"; }
+    }
+    getWeather();
+
+    // 5. TO-DO LOGIC (Local Storage + Arrays)
+    let tasks = JSON.parse(localStorage.getItem('tasks_v2')) || [];
+    function renderTasks() {
+        const list = document.getElementById('taskList');
+        list.innerHTML = tasks.map((t, i) => `<li>${t} <button onclick="removeTask(${i})" style="border:none; cursor:pointer;">❌</button></li>`).join('');
+        localStorage.setItem('tasks_v2', JSON.stringify(tasks));
+    }
+
+    function addTask() {
+        const input = document.getElementById('taskInput');
+        if(input.value) {
+            tasks.push(input.value);
+            input.value = '';
+            renderTasks();
+        }
+    }
+
+    function removeTask(i) {
+        tasks.splice(i, 1);
+        renderTasks();
+    }
+    renderTasks();
+
+    // 6. SEARCH FILTER
+    const frameworks = ['React', 'Angular', 'Vue', 'Svelte', 'Next.js', 'Nuxt', 'Express', 'Django'];
+    function searchItems(query) {
+        const results = document.getElementById('results');
+        const filtered = frameworks.filter(f => f.toLowerCase().includes(query.toLowerCase()));
+        results.innerHTML = filtered.map(f => `<span style="background:#ddd; padding:5px; border-radius:5px; color:#333">${f}</span>`).join('');
+    }
+    searchItems(''); // Initial
+</script>
+
+</body>
+</html>

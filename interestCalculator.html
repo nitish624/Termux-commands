@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Byaj Calculator</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; margin-bottom: 20px; }
+        h2, h3 { text-align: center; color: #1a73e8; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #444; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        .row { display: flex; gap: 10px; }
+        .btn-calc { width: 100%; padding: 15px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn-calc:hover { background: #1557b0; }
+        #result { margin-top: 20px; padding: 15px; background: #e8f0fe; border-left: 5px solid #1a73e8; border-radius: 4px; display: none; }
+        .history-card { width: 100%; max-width: 500px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .history-item { border-bottom: 1px dashed #ddd; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
+        .total-box { margin-top: 15px; padding: 15px; background: #34a853; color: white; border-radius: 8px; text-align: center; font-size: 18px; font-weight: bold; }
+        .delete-btn { color: #d93025; cursor: pointer; font-size: 20px; border: none; background: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Byaj Calculator</h2>
+    
+    <div class="input-group">
+        <label>Principal (मूलधन):</label>
+        <input type="number" id="principal" placeholder="₹ Amount enter karein">
+    </div>
+
+    <div class="input-group">
+        <label>Monthly Rate % (ब्याज दर):</label>
+        <input type="number" id="rate" value="2">
+    </div>
+
+    <hr>
+    <p style="text-align:center; font-weight:bold; color:#666;">Time Select Karein (Koi ek option)</p>
+
+    <div class="input-group">
+        <label>Dates se calculate karein:</label>
+        <div class="row">
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+        </div>
+    </div>
+
+    <p style="text-align:center; margin: 5px 0;">OR</p>
+
+    <div class="input-group">
+        <label>Manual time bhariye:</label>
+        <div class="row">
+            <input type="number" id="manualYear" placeholder="Year">
+            <input type="number" id="manualMonth" placeholder="Month">
+            <input type="number" id="manualDay" placeholder="Day">
+        </div>
+    </div>
+
+    <button class="btn-calc" onclick="processCalculation()">Calculate & Save</button>
+
+    <div id="result"></div>
+</div>
+
+<div class="history-card">
+    <h3>Saved History</h3>
+    <div id="historyList"></div>
+    <div id="grandTotalBox" class="total-box">Grand Total: ₹0.00</div>
+    <button onclick="clearHistory()" style="width:100%; margin-top:10px; background:none; border:none; color:grey; cursor:pointer; text-decoration:underline;">Clear All</button>
+</div>
+
+<script>
+    // Page load hote hi history dikhayein
+    window.onload = function() {
+        document.getElementById('endDate').valueAsDate = new Date();
+        displayHistory();
+    };
+
+    function processCalculation() {
+        const p = parseFloat(document.getElementById('principal').value);
+        const r = parseFloat(document.getElementById('rate').value);
+        
+        if (!p || !r) return alert("Pehle Amount aur Rate bhariye!");
+
+        let totalMonths = 0;
+        let timeLabel = "";
+
+        // Logic check: Manual input hai ya Dates?
+        const mYear = parseFloat(document.getElementById('manualYear').value) || 0;
+        const mMonth = parseFloat(document.getElementById('manualMonth').value) || 0;
+        const mDay = parseFloat(document.getElementById('manualDay').value) || 0;
+
+        if (mYear || mMonth || mDay) {
+            // Manual Logic
+            totalMonths = (mYear * 12) + mMonth + (mDay / 30);
+            timeLabel = `${mYear}Y, ${mMonth}M, ${mDay}D`;
+        } else {
+            // Date Logic
+            const start = new Date(document.getElementById('startDate').value);
+            const end = new Date(document.getElementById('endDate').value);
+            
+            if (isNaN(start)) return alert("Date select karein ya Manual time bhariye!");
+            
+            let diffMs = end - start;
+            let diffDays = diffMs / (1000 * 60 * 60 * 24);
+            totalMonths = diffDays / 30;
+            timeLabel = `${Math.floor(diffDays / 30)} Mahine, ${Math.floor(diffDays % 30)} Din`;
+        }
+
+        const interest = (p * r * totalMonths) / 100;
+        const total = p + interest;
+
+        // Display Current Result
+        const resDiv = document.getElementById('result');
+        resDiv.style.display = "block";
+        resDiv.innerHTML = `Interest: ₹${interest.toFixed(2)} <br> <strong>Total: ₹${total.toFixed(2)}</strong>`;
+
+        // Save to LocalStorage
+        saveToStorage({
+            date: new Date().toLocaleDateString(),
+            principal: p,
+            interest: interest,
+            total: total,
+            time: timeLabel
+        });
+    }
+
+    function saveToStorage(obj) {
+        let history = JSON.parse(localStorage.getItem('byajHistory')) || [];
+        history.push(obj);
+        localStorage.setItem('byajHistory', JSON.stringify(history));
+        displayHistory();
+    }
+
+    function displayHistory() {
+        let history = JSON.parse(localStorage.getItem('byajHistory')) || [];
+        const listDiv = document.getElementById('historyList');
+        let grandTotal = 0;
+
+        listDiv.innerHTML = "";
+        history.forEach((item, index) => {
+            grandTotal += item.total;
+            listDiv.innerHTML += `
+                <div class="history-item">
+                    <div>
+                        <strong>₹${item.principal}</strong> (${item.time})<br>
+                        <small>${item.date} - Byaj: ₹${item.interest.toFixed(2)}</small>
+                    </div>
+                    <div>
+                        <b>₹${item.total.toFixed(2)}</b>
+                        <button class="delete-btn" onclick="deleteItem(${index})">×</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('grandTotalBox').innerText = `Grand Total: ₹${grandTotal.toFixed(2)}`;
+    }
+
+    function deleteItem(index) {
+        let history = JSON.parse(localStorage.getItem('byajHistory'));
+        history.splice(index, 1);
+        localStorage.setItem('byajHistory', JSON.stringify(history));
+        displayHistory();
+    }
+
+    function clearHistory() {
+        if(confirm("Kya aap puri history delete karna chahte hain?")) {
+            localStorage.removeItem('byajHistory');
+            displayHistory();
+        }
+    }
+</script>
+
+</body>
+</html>

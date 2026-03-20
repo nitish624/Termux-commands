@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Music Studio - All-in-One</title>
+    <style>
+        :root {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --accent: #00d2ff;
+            --wood: #5d2e00;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Poppins', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 20px;
+        }
+
+        h1 { margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); }
+
+        .studio-container {
+            display: flex; flex-direction: column; gap: 40px; width: 100%; max-width: 900px;
+        }
+
+        .instrument-card {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        /* --- GUITAR UI --- */
+        .guitar-body {
+            width: 100%; height: 180px;
+            background: linear-gradient(90deg, #3d1f00, #8b4513, #3d1f00);
+            border-radius: 10px; position: relative;
+            display: flex; flex-direction: column; justify-content: space-around;
+            padding: 10px 0; cursor: crosshair; overflow: hidden;
+        }
+        .string-row { width: 100%; height: 15px; display: flex; align-items: center; }
+        .string { 
+            width: 100%; height: var(--h); background: #ddd; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.8); transition: 0.1s;
+        }
+        .vibrate { animation: shake 0.1s infinite; background: #fff !important; }
+
+        /* --- PIANO UI --- */
+        .piano { display: flex; justify-content: center; height: 150px; background: #000; padding: 5px; border-radius: 5px; }
+        .key { 
+            width: 40px; height: 100%; background: white; border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px; cursor: pointer; transition: 0.1s;
+        }
+        .key:active { background: #ddd; transform: translateY(2px); }
+        .black-key { 
+            width: 25px; height: 90px; background: #222; margin-left: -12.5px; margin-right: -12.5px;
+            z-index: 2; border-radius: 0 0 3px 3px; 
+        }
+
+        /* --- DRUM PAD UI --- */
+        .drum-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .pad { 
+            height: 80px; background: #333; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-bottom: 4px solid #000; font-weight: bold;
+        }
+        .pad:active { border-bottom: 0; transform: translateY(4px); background: var(--accent); }
+
+        @keyframes shake {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-1.5px); }
+            100% { transform: translateY(1.5px); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Virtual Music Studio</h1>
+
+    <div class="studio-container">
+        
+        <div class="instrument-card">
+            <h3>Electric Guitar</h3>
+            <p style="font-size: 0.8em; margin-bottom: 10px;">Hover strings or use keys 1-6</p>
+            <div class="guitar-body" id="guitar">
+                <div class="string-row" onmouseenter="playNote(82)"><div class="string" style="--h:4px"></div></div>
+                <div class="string-row" onmouseenter="playNote(110)"><div class="string" style="--h:3.5px"></div></div>
+                <div class="string-row" onmouseenter="playNote(146)"><div class="string" style="--h:3px"></div></div>
+                <div class="string-row" onmouseenter="playNote(196)"><div class="string" style="--h:2.5px"></div></div>
+                <div class="string-row" onmouseenter="playNote(246)"><div class="string" style="--h:2px"></div></div>
+                <div class="string-row" onmouseenter="playNote(329)"><div class="string" style="--h:1.5px"></div></div>
+            </div>
+        </div>
+
+        <div class="instrument-card">
+            <h3>Mini Piano</h3>
+            <div class="piano">
+                <div class="key" onclick="playNote(261)"></div>
+                <div class="black-key" onclick="playNote(277)"></div>
+                <div class="key" onclick="playNote(293)"></div>
+                <div class="black-key" onclick="playNote(311)"></div>
+                <div class="key" onclick="playNote(329)"></div>
+                <div class="key" onclick="playNote(349)"></div>
+                <div class="black-key" onclick="playNote(370)"></div>
+                <div class="key" onclick="playNote(392)"></div>
+                <div class="black-key" onclick="playNote(415)"></div>
+                <div class="key" onclick="playNote(440)"></div>
+                <div class="black-key" onclick="playNote(466)"></div>
+                <div class="key" onclick="playNote(493)"></div>
+            </div>
+        </div>
+
+        <div class="instrument-card">
+            <h3>Drum Pad</h3>
+            <div class="drum-grid">
+                <div class="pad" onclick="playDrum(100, 'sine')">KICK</div>
+                <div class="pad" onclick="playDrum(400, 'square')">SNARE</div>
+                <div class="pad" onclick="playDrum(800, 'sawtooth')">HI-HAT</div>
+                <div class="pad" onclick="playDrum(200, 'triangle')">TOM</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Harmonious Note Player (Guitar & Piano)
+        function playNote(freq) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1);
+
+            // Trigger vibration for guitar strings
+            event.target.classList.add('vibrate');
+            setTimeout(() => event.target.classList.remove('vibrate'), 150);
+        }
+
+        // Drum Sound Generator
+        function playDrum(freq, type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.2);
+        }
+
+        // Keyboard Support
+        window.addEventListener('keydown', (e) => {
+            const keys = {'1':82, '2':110, '3':146, '4':196, '5':246, '6':329};
+            if(keys[e.key]) playNote(keys[e.key]);
+        });
+    </script>
+</body>
+</html>
